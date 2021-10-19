@@ -7,14 +7,37 @@ from pydantic.main import BaseModel
 from pydantic.networks import EmailStr, IPvAnyAddress
 
 
+class MethodRegister(BaseModel):
+    method_name_version: str = None
+    maker_email : str = None
+    robot_type : str = None
+    subject_type : str = None
+    method_file_loc : str = None
+
+class RobotRegister(BaseModel):
+    robot_serial : str = None
+    factory_name : str = None
+    method_id : str = None
+    robot_type : str = None
+    robot_ip : str = None
+    loc_x : float = None
+    loc_y : float = None
 
 class CompanyRegister(BaseModel):
     company_name : str = None
 
+class FactoryRegister(BaseModel):
+    factory_name : str = None
+    company_name : str = None
+    FactoryLoc : str = None
 
 class TestUserRegister(BaseModel):
     email: str = None
     pw: str = None
+    company: str = None
+    name: str = None
+    usertype: str = None
+    
 
 class SnsType(str, Enum):
     email: str = "email"
@@ -24,8 +47,6 @@ class SnsType(str, Enum):
 
 class RegisterMessage(BaseModel):
     message: str = None;    
-
-
 
 class Token(BaseModel):
     Authorization: str = None
@@ -41,7 +62,6 @@ class MessageOk(BaseModel):
     message: str = Field(default="OK")
 
 class UserToken(BaseModel):
-    id: int
     email: str = None
     name: str = None
     phone_number: str = None
@@ -75,14 +95,11 @@ class GetApiKeyList(AddApiKey):
     access_key: str = None
     created_at: datetime = None
 
-
 class GetApiKeys(GetApiKeyList):
     secret_key: str = None
 
-
 class CreateAPIWhiteLists(BaseModel):
     ip_addr: str = None
-
 
 class GetAPIWhiteLists(CreateAPIWhiteLists):
     id: int

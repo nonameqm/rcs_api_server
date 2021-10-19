@@ -1,3 +1,5 @@
+from dataclasses import FrozenInstanceError
+from typing import Text
 from sqlalchemy import (
     Column,
     Integer,
@@ -10,6 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session, relationship
 from sqlalchemy.sql.expression import null
+from sqlalchemy.sql.sqltypes import TEXT, VARCHAR, Float
 
 from database.conn import Base, db
 
@@ -161,19 +164,57 @@ class BaseMixin:
             self._session.flush()
 
 class User(Base, BaseMixin):
-    __tablename__ = "User"
-    email = Column(String(length=255), primary_key=True)
-    pw = Column(String(length=2000), nullable=False)
-    usertype = Column(Enum("Admin", "Company-Host", "Company-User", "Developer"))
+    __tablename__ = "TestUser"
+    ID = Column(Integer, primary_key=True)
+    email = Column(String(length=255), nullable=False)
+    pw = Column(String(length=255), nullable=False)
+    usertype = Column(Enum("Admin", "Company-Host", "Company-User", "Developer"), default="Company-User")
+    name = Column(String(length=255), nullable=True)
     status = Column(Enum("active", "deleted", "blocked"), default="active")
-    CompanyID = Column(Integer, nullable=True)
+    company_id = Column(Integer, ForeignKey("Company.CompanyID"))
     phone_number = Column(String(length=20), nullable=True, unique=True)
     profile_img = Column(String(length=1000), nullable=True)
     sns_type = Column(Enum("FB", "G", "K", 'N'), nullable=True)
     updated_at = Column(DateTime, nullable=False, default=func.utc_timestamp(), onupdate=func.utc_timestamp())
 
+class RobotTypeList(Base, BaseMixin):
+    __tablename__ = "RobotTypeList"
+    RobotType = Column(String(length=30), primary_key=True)
+
+
+class SubjectTypeList(Base, BaseMixin):
+    __tablename__ = "SubjectTypeList"
+    SubjectType = Column(String(length=30), primary_key=True)
 
 class Company(Base, BaseMixin):
     __tablename__ = "Company"
     CompanyID = Column(Integer, primary_key=True)
     CompanyName = Column(String(length=255), nullable=False)
+
+class Factory(Base, BaseMixin):
+    __tablename__ = "Factory"
+    FactoryID = Column(Integer, primary_key=True)
+    CompanyID = Column(Integer, ForeignKey("Company.CompanyID"), nullable=False)
+    FactoryLoc = Column(String(length=100), nullable=True)
+    factory_name = Column(String(length=200), nullable=False)
+
+class Robot(Base, BaseMixin):
+    __tablename__ = "Robot"
+    RobotSerial = Column(String(length=30), primary_key=True)
+    FactoryID = Column(Integer, ForeignKey("Factory.FactoryID"), nullable=True)
+    MethodID = Column(Integer, ForeignKey("Method.MethodID"), nullable=True)
+    robot_type = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"), nullable=False)
+    robot_ip = Column(String(length=100), nullable=False)
+    loc_x = Column(Float, nullable=True),
+    loc_y = Column(Float, nullable=True)
+
+class Method(Base, BaseMixin):
+    __tablename__ = "Method"
+    MethodID = Column(Integer, primary_key=True)
+    MethodNameVersion = Column(TEXT, nullable=False)
+    Maker = Column(Integer, ForeignKey("TestUser.ID"), nullable=False)
+    RobotType = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"), nullable=False)
+    SubjectType = Column(String(length=30), ForeignKey("SubjectTypeList.SubjectType"), nullable=False)
+    MethodFileLoc = Column(TEXT, nullable=False)
+
+
