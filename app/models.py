@@ -7,6 +7,12 @@ from pydantic.main import BaseModel
 from pydantic.networks import EmailStr, IPvAnyAddress
 
 
+
+class DataUpdate(BaseModel):
+    robot_serial: str=None
+    type: str=None
+    value: float=None
+
 class MethodRegister(BaseModel):
     method_name_version: str = None
     maker_email : str = None

@@ -14,9 +14,9 @@ from sqlalchemy.sql.sqltypes import JSON
 from starlette.responses import JSONResponse
 
 from database.conn import db
-from database.schema import User, Company, Factory, Robot, RobotTypeList, Method, SubjectTypeList
+from database.schema import User, Company, Factory, Robot, RobotTypeList, Method, SubjectTypeList, RobotDataTypeList, RobotData
 from models import CompanyRegister, RegisterMessage, Token, FactoryRegister, RobotRegister, MethodRegister
-
+from routes.logic.data_check import *
 
 router=APIRouter(prefix="/register")
 
@@ -56,7 +56,6 @@ async def register_new_factory(reg_info: FactoryRegister, session: Session=Depen
             FactoryLoc= reg_info.FactoryLoc
         )
         return
-
     else:
         return JSONResponse(status_code=400, content=dict(msg="No such company exists"))
 
@@ -81,20 +80,35 @@ async def register_new_robot(reg_info: RobotRegister, session: Session=Depends(d
         #TODO : Robot Type automatically registered
         return JSONResponse(status_code=400, content=dict(msg="Check your robot type again"))
 
+    if is_robot_exist(reg_info.robot_serial, reg_info.robot_ip):
+        return JSONResponse(status_code=400, content=dict(msg="Robot Already Exists for its serial or its ip"))
+
     new_robot=Robot.create(
         session,
         auto_commit=True,
         RobotSerial = reg_info.robot_serial,
-        FactoryID = factoryID,  
+        FactoryID = factoryID, 
+        robot_ip=reg_info.robot_ip,
         #TODO - MethodID Control
-        MethodID = methodID,
+        #MethodID = methodID,
         robot_type = reg_info.robot_type,
         loc_x = reg_info.loc_x,
         loc_y = reg_info.loc_y
     )
 
-    return
+    data_type_list=RobotDataTypeList.filter(RobotType=new_robot.robot_type).all()
+    type_list=[]
 
+    for data_type in data_type_list:
+        RobotData.create(
+            session,
+            auto_commit=True,
+            RobotType=data_type.RobotType,
+            RobotDataType=data_type.RobotDataType,
+            RobotID = new_robot.RobotID,
+        )
+    return
+    
 @router.post("/method", status_code=200)
 async def register_new_method(reg_info: MethodRegister, session:Session=Depends(db.session)):
     
@@ -129,49 +143,3 @@ async def register_new_method(reg_info: MethodRegister, session:Session=Depends(
     return
     #TODO : Docker Image Create
 
-
-
-
-def is_method_exist(name_version: str):
-    get_method=Method.get(MethodNameVersion=name_version)
-    if get_method:
-        return True
-    return False
-
-def is_subjecttype_exist(subject_type: str):
-    get_subjecttype=SubjectTypeList.get(SubjectType=subject_type)
-    if get_subjecttype:
-        return True
-    return False
-
-def is_robottype_exist(robot_type: str):
-    get_robottype=RobotTypeList.get(RobotType=robot_type)
-    if get_robottype:
-        return True
-    return False
-
-def is_factory_exist(factory_name: str, company_name: str=None):
-    if company_name is not None:
-        company_id=Company.get(CompanyName=company_name).CompanyID
-        get_factory=Factory.get(CompanyID=company_id, factory_name=factory_name)
-        if get_factory:
-            return True
-        return False
-        
-    else:
-        get_factory=Factory.get(factory_name=factory_name)
-        if get_factory:
-            return True
-        return False
-
-def is_company_exist(name: str):
-    get_company=Company.get(CompanyName=name)
-    if get_company:
-        return True
-    return False
-
-async def is_email_exist(email: str):
-    get_email=User.get(email=email)
-    if get_email:
-        return True
-    return False

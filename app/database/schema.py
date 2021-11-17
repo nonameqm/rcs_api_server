@@ -1,4 +1,5 @@
 from dataclasses import FrozenInstanceError
+from enum import auto
 from typing import Text
 from sqlalchemy import (
     Column,
@@ -11,7 +12,7 @@ from sqlalchemy import (
     ForeignKey,
 )
 from sqlalchemy.orm import Session, relationship
-from sqlalchemy.sql.expression import null
+from sqlalchemy.sql.expression import false, null
 from sqlalchemy.sql.sqltypes import TEXT, VARCHAR, Float
 
 from database.conn import Base, db
@@ -181,6 +182,20 @@ class RobotTypeList(Base, BaseMixin):
     __tablename__ = "RobotTypeList"
     RobotType = Column(String(length=30), primary_key=True)
 
+class RobotDataTypeList(Base, BaseMixin):
+    __tablename__ = "RobotDataTypeList"
+    RobotType = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"),primary_key=True)
+    RobotDataType = Column(String(length=30), nullable=False, primary_key=True)
+    Explanation = Column(TEXT, nullable=True)
+    RealTime = Column(Integer, nullable=False, default=1)
+
+class RobotData(Base, BaseMixin):
+    __tablename__ = "RobotData"
+    RobotDataID = Column(Integer, primary_key=True)
+    RobotType = Column(String(length=30), ForeignKey("RobotDataTypeList.RobotType"))
+    RobotDataType = Column(String(length=30), ForeignKey("RobotDataTypeList.RobotDataType"))
+    RobotID = Column(Integer, ForeignKey("Robot.RobotID"))
+    RobotDataValue = Column(Float, nullable=False, default=0)
 
 class SubjectTypeList(Base, BaseMixin):
     __tablename__ = "SubjectTypeList"
@@ -200,12 +215,13 @@ class Factory(Base, BaseMixin):
 
 class Robot(Base, BaseMixin):
     __tablename__ = "Robot"
-    RobotSerial = Column(String(length=30), primary_key=True)
+    RobotID = Column(Integer, primary_key=True)
+    RobotSerial = Column(String(length=30), nullable=True)
     FactoryID = Column(Integer, ForeignKey("Factory.FactoryID"), nullable=True)
     MethodID = Column(Integer, ForeignKey("Method.MethodID"), nullable=True)
-    robot_type = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"), nullable=False)
-    robot_ip = Column(String(length=100), nullable=False)
-    loc_x = Column(Float, nullable=True),
+    robot_type = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"), nullable=False, default='X-ARM6 Test')
+    robot_ip = Column(String(length=100), nullable=False, unique=True)
+    loc_x = Column(Float, nullable=True)
     loc_y = Column(Float, nullable=True)
 
 class Method(Base, BaseMixin):
