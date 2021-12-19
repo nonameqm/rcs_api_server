@@ -1,7 +1,14 @@
 from dataclasses import dataclass
 from os import path, environ
+import logging
+
+
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
+
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 
 @dataclass
 class Config:
