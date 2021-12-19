@@ -78,9 +78,6 @@ async def get_robot_list(company_name: Optional[str]=None, factory_name: Optiona
             robot_list.append(robot)
         return robot_list
 
-
-
-
 @router.get("/robot_data/{robot_serial}", status_code=200)
 async def get_robot_data_by_serial(robot_serial: str):
     if robot_serial is None:

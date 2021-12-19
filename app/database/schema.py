@@ -165,7 +165,7 @@ class BaseMixin:
             self._session.flush()
 
 class User(Base, BaseMixin):
-    __tablename__ = "TestUser"
+    __tablename__ = "testuser"
     ID = Column(Integer, primary_key=True)
     email = Column(String(length=255), nullable=False)
     pw = Column(String(length=255), nullable=False)
@@ -179,58 +179,58 @@ class User(Base, BaseMixin):
     updated_at = Column(DateTime, nullable=False, default=func.utc_timestamp(), onupdate=func.utc_timestamp())
 
 class RobotTypeList(Base, BaseMixin):
-    __tablename__ = "RobotTypeList"
+    __tablename__ = "robottypelist"
     RobotType = Column(String(length=30), primary_key=True)
 
 class RobotDataTypeList(Base, BaseMixin):
-    __tablename__ = "RobotDataTypeList"
-    RobotType = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"),primary_key=True)
+    __tablename__ = "robotdatatypelist"
+    RobotType = Column(String(length=30), ForeignKey("robottypelist.robottype"),primary_key=True)
     RobotDataType = Column(String(length=30), nullable=False, primary_key=True)
     Explanation = Column(TEXT, nullable=True)
     RealTime = Column(Integer, nullable=False, default=1)
 
 class RobotData(Base, BaseMixin):
-    __tablename__ = "RobotData"
+    __tablename__ = "robotdata"
     RobotDataID = Column(Integer, primary_key=True)
-    RobotType = Column(String(length=30), ForeignKey("RobotDataTypeList.RobotType"))
-    RobotDataType = Column(String(length=30), ForeignKey("RobotDataTypeList.RobotDataType"))
-    RobotID = Column(Integer, ForeignKey("Robot.RobotID"))
+    RobotType = Column(String(length=30), ForeignKey("robotdatatypelist.RobotType"))
+    RobotDataType = Column(String(length=30), ForeignKey("robotdatatypelist.RobotDataType"))
+    RobotID = Column(Integer, ForeignKey("robot.RobotID"))
     RobotDataValue = Column(Float, nullable=False, default=0)
 
 class SubjectTypeList(Base, BaseMixin):
-    __tablename__ = "SubjectTypeList"
+    __tablename__ = "subjecttypelist"
     SubjectType = Column(String(length=30), primary_key=True)
 
 class Company(Base, BaseMixin):
-    __tablename__ = "Company"
+    __tablename__ = "company"
     CompanyID = Column(Integer, primary_key=True)
     CompanyName = Column(String(length=255), nullable=False)
 
 class Factory(Base, BaseMixin):
-    __tablename__ = "Factory"
+    __tablename__ = "factory"
     FactoryID = Column(Integer, primary_key=True)
-    CompanyID = Column(Integer, ForeignKey("Company.CompanyID"), nullable=False)
+    CompanyID = Column(Integer, ForeignKey("company.CompanyID"), nullable=False)
     FactoryLoc = Column(String(length=100), nullable=True)
     factory_name = Column(String(length=200), nullable=False)
 
 class Robot(Base, BaseMixin):
-    __tablename__ = "Robot"
+    __tablename__ = "robot"
     RobotID = Column(Integer, primary_key=True)
     RobotSerial = Column(String(length=30), nullable=True)
-    FactoryID = Column(Integer, ForeignKey("Factory.FactoryID"), nullable=True)
-    MethodID = Column(Integer, ForeignKey("Method.MethodID"), nullable=True)
-    robot_type = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"), nullable=False, default='X-ARM6 Test')
+    FactoryID = Column(Integer, ForeignKey("factory.FactoryID"), nullable=True)
+    MethodID = Column(Integer, ForeignKey("method.MethodID"), nullable=True)
+    robot_type = Column(String(length=30), ForeignKey("robottypelist.RobotType"), nullable=False, default='X-ARM6 Test')
     robot_ip = Column(String(length=100), nullable=False, unique=True)
     loc_x = Column(Float, nullable=True)
     loc_y = Column(Float, nullable=True)
 
 class Method(Base, BaseMixin):
-    __tablename__ = "Method"
+    __tablename__ = "method"
     MethodID = Column(Integer, primary_key=True)
     MethodNameVersion = Column(TEXT, nullable=False)
-    Maker = Column(Integer, ForeignKey("TestUser.ID"), nullable=False)
-    RobotType = Column(String(length=30), ForeignKey("RobotTypeList.RobotType"), nullable=False)
-    SubjectType = Column(String(length=30), ForeignKey("SubjectTypeList.SubjectType"), nullable=False)
+    Maker = Column(Integer, ForeignKey("testuser.ID"), nullable=False)
+    RobotType = Column(String(length=30), ForeignKey("robottypelist.RobotType"), nullable=False)
+    SubjectType = Column(String(length=30), ForeignKey("subjecttypelist.SubjectType"), nullable=False)
     MethodFileLoc = Column(TEXT, nullable=False)
 
 
