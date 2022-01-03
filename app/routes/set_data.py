@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from os import name
+import os
 from typing import List, Optional
 from fastapi import APIRouter, File, UploadFile
 
@@ -22,6 +22,7 @@ from models import CompanyRegister, RegisterMessage, Token, FactoryRegister, Rob
 
 from routes.logic.data_check import *
 import requests
+import json
 
 router=APIRouter(prefix="/set")
 
@@ -47,21 +48,63 @@ async def get_file(file: UploadFile = File(...)):
     
 
 
-@router.post("/set_command", status_code=200)
+@router.post("/command", status_code=200)
 async def set_command(command: CommandUpdate=None):
+    method_type=[
+        "manual_start",
+        "get_pos",
+        "remove_pos",
+        "manual_stop",
+        "plan_save",
+        "manual_end",
+        "get_method",
+        "set_method",
+        "exec_method",
+        "exec_method_wo_camera",
+        "error_clear"
+    ]
+
+    robot_serial=command.robot_serial
+    robot_command=command.robot_command
+    data=command.robot_param
+
+    #exception handling
     if command==None:
         return "No Command Input"
     
-    
+    if command.robot_command not in method_type:
+        return "No such Command"
+
+
+    if command.robot_command == "get_method":
+        if command.robot_param==None:
+            return "No method name indicated"
+
+    #robot_set_method
+    if command.robot_command == "set_method":
+        if command.robot_param is None:
+            return "Please Indicate Right Method"
+
+        else:
+            try:
+                buffer = open('static/'+command.robot_param, "r")
+                data=buffer.read()
+                data = json.loads(data)
+            except:
+                return "No Data"                
+
+
+
+
     url='http://'+command.robot_ip
     command={
-        'robot_serial': command.robot_serial,
-        'robot_command': command.robot_command,
-        'robot_param': command.robot_param
+        'robot_serial': robot_serial,
+        'robot_command': robot_command,
+        'robot_param': data,
     }
+
     headers={'Content-Type':'application/json; charset=utf-8'}
     response=requests.post(url, json=command, headers=headers, timeout=2)
 
-    if response.status_code==200:
-        return response.status_code
-    
+    return response.status_code
+
