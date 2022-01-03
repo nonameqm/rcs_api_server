@@ -8,6 +8,12 @@ from pydantic.networks import EmailStr, IPvAnyAddress
 
 
 
+class CommandUpdate(BaseModel):
+    robot_ip: str=None
+    robot_serial: str=None
+    robot_command: str=None
+    robot_param: str=None
+
 class DataUpdate(BaseModel):
     robot_serial: str=None
     type: str=None

@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 from os import name
 from typing import List, Optional
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
 
 import bcrypt
 from fastapi.param_functions import File
 import jwt
+import shutil
 
 from fastapi import APIRouter, Depends
 from pydantic.errors import EmailError
@@ -17,9 +18,10 @@ from starlette.responses import JSONResponse
 
 from database.conn import db
 from database.schema import User, Company, Factory, Robot, RobotTypeList, Method, SubjectTypeList, RobotDataTypeList, RobotData
-from models import CompanyRegister, RegisterMessage, Token, FactoryRegister, RobotRegister, MethodRegister, DataUpdate
+from models import CompanyRegister, RegisterMessage, Token, FactoryRegister, RobotRegister, MethodRegister, DataUpdate, CommandUpdate
 
 from routes.logic.data_check import *
+import requests
 
 router=APIRouter(prefix="/set")
 
@@ -36,13 +38,30 @@ async def update_robot_date(update_data: DataUpdate,  session: Session=Depends(d
     return
 
 
-@router.post("/get_execution_file", status_code=200)
-async def get_execution_file(files: List[bytes]):
-    for file in files:
-        contents = await file.read()
-        # dockerfile created
-
+@router.post("/set_execution_file", status_code=200)
+async def get_file(file: UploadFile = File(...)):
+    with open('static/'+file.filename, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    return {"filename": file.filename}
     
 
 
-        
+@router.post("/set_command", status_code=200)
+async def set_command(command: CommandUpdate=None):
+    if command==None:
+        return "No Command Input"
+    
+    
+    url='http://'+command.robot_ip
+    command={
+        'robot_serial': command.robot_serial,
+        'robot_command': command.robot_command,
+        'robot_param': command.robot_param
+    }
+    headers={'Content-Type':'application/json; charset=utf-8'}
+    response=requests.post(url, json=command, headers=headers, timeout=2)
+
+    if response.status_code==200:
+        return response.status_code
+    

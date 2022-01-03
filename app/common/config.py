@@ -19,7 +19,7 @@ class Config:
 @dataclass
 class LocalConfig(Config):
     PROJ_RELOAD : bool = True
-    DB_URL : str = "mysql+pymysql://rcs_admin:%s@localhost/rcs_db?charset=utf8mb4"
+    DB_URL : str = "mysql+pymysql://rcs_admin:%s@db-90ndo.cdb.ntruss.com/rcs_db?charset=utf8mb4"
 
 @dataclass
 class ProdConfig(Config):

@@ -19,7 +19,7 @@ class SQLAlchemy:
         echo = kwargs.setdefault("DB_ECHO", True)
 
         self._engine = create_engine(
-            database_url%quote('1q2w3e4r'),
+            database_url%quote('1q2w3e4r!'),
             echo=echo,
             pool_recycle=pool_recycle,
             pool_pre_ping=True,
