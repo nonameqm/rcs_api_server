@@ -24,3 +24,17 @@
 
 
 # 프로젝트 디렉토리
+- app
+  - common - Connection Info 및 상수 파일
+
+  - logic - Application 내 공통 로직 함수 파ㅌ
+
+  - routes - Routing 포함, 실제 rest_api 구현 파트
+
+  - static - 실제 X-ARM6 Method Data 저장 위치
+
+  - main.py - 실행 파일
+
+  - scheme.py - MYSQL 데이터베이스 스키마
+
+  - models.py - Response, Requqest 모델 정의 
