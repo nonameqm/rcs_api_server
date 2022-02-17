@@ -52,3 +52,9 @@
 - scheme.py
 - ![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/48423723/154422342-90450b43-bbda-4c71-8d60-54fbfbc8bdda.png)
 
+
++ Get
+  + /item/factory_overview/{factory}
+    + factory : string - factory_name
+    + result : {pass: 0, defection: 0 }    
++ POST
