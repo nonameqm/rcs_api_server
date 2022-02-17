@@ -38,3 +38,16 @@
   - scheme.py - MYSQL 데이터베이스 스키마
 
   - models.py - Response, Requqest 모델 정의 
+
+
+# RESTAPI 정리
+- routes 폴더
+  - auth.py -> RCS 프로그램 로그인 및 등록에 관련된 API (USer, AuthToken  구현)
+  - item.py -> Company, Robot, Factory, TestResult 등 각종 시스템에 있는 구현 정리
+  - register.py -> 데이터 생성에  관한 API
+  - robot.py -> 로봇 ROS와의 통신을 위한 API (Command와 관련된 API는 (https://candy-muskox-1d3.notion.site/command-API-a880979f33e44bb093fdbf24afc543f5) 참조)
+  - test.py -> TEST API
+
+
+- scheme.py
+- 
