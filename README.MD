@@ -53,8 +53,10 @@
 - ![QuickDBD-Free Diagram](https://user-images.githubusercontent.com/48423723/154422342-90450b43-bbda-4c71-8d60-54fbfbc8bdda.png)
 
 
-+ Get
-  + /item/factory_overview/{factory}
-    + factory : string - factory_name
-    + result : {pass: 0, defection: 0 }    
-+ POST
+- python3 main.py -> ip:port/docs = Swagger 파일 확인
+api-info
+- <img width="804" alt="post" src="https://user-images.githubusercontent.com/48423723/154423654-0f1fbfd2-3399-45d6-88ed-8162173f339c.png">
+- <img width="804" alt="get" src="https://user-images.githubusercontent.com/48423723/154423761-857d67c3-e02b-42b7-8dc8-9a54d3a8086b.png">
+
+models
+- <img width="773" alt="models" src="https://user-images.githubusercontent.com/48423723/154423889-ce4fe25d-3e04-46e7-ba97-ccfa5a16dcd6.png">
